@@ -12,14 +12,10 @@ import DeliveryBoyChat from './DeliveryBoyChat';
 import { CircleCheck, Loader } from 'lucide-react';
 import {
   CartesianGrid,
-  Line,
-  LineChart,
   XAxis,
   YAxis,
   ResponsiveContainer,
   Tooltip,
-  Area,
-  AreaChart,
   BarChart,
   Bar,
   Legend,
@@ -111,7 +107,6 @@ const DeliveryBoy = ({ todaysEarnings }: DeliveryBoyProps) => {
   const getAcceptedAssignment = async () => {
     try {
       const result = await axios(`/api/delivery/accepted-order`);
-      // console.log(result.data, 'accepted');
       if (result.data.active) {
         setActiveAssignment(result.data.assignment);
         setUserAddressLocation({
@@ -128,6 +123,19 @@ const DeliveryBoy = ({ todaysEarnings }: DeliveryBoyProps) => {
     fetchAssignments();
     getAcceptedAssignment();
   }, [userData]);
+
+  const handleAssignmentAccepted = (acceptedAssignment: any) => {
+    setActiveAssignment(acceptedAssignment);
+    
+    if (acceptedAssignment?.order?.address?.latitude && acceptedAssignment?.order?.address?.longitude) {
+      setUserAddressLocation({
+        latitude: acceptedAssignment.order.address.latitude,
+        longitude: acceptedAssignment.order.address.longitude,
+      });
+    }
+    
+    setAssignments(prev => prev.filter(a => a._id !== acceptedAssignment._id));
+  };
 
   const sendOtp = async () => {
     setSendOtpLoading(true);
@@ -173,56 +181,56 @@ const DeliveryBoy = ({ todaysEarnings }: DeliveryBoyProps) => {
     ];
     return (
       <div className="flex items-center justify-center min-h-screen h-full bg-linear-to-br from-white to-green-50 px-6 pt-10">
-    <div className="max-w-md w-full text-center">
-      <h2 className="text-2xl font-bold text-gray-800">
-        No Active Deliveries 🚛
-      </h2>
-      <p className="text-gray-500 mb-5">
-        Stay online to receive new orders
-      </p>
+        <div className="max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold text-gray-800">
+            No Active Deliveries 🚛
+          </h2>
+          <p className="text-gray-500 mb-5">
+            Stay online to receive new orders
+          </p>
 
-      <div className="bg-white border rounded-xl shadow-xl p-6">
-        <h2 className="font-medium text-green-600 mb-2">
-          Today's Performance
-        </h2>
+          <div className="bg-white border rounded-xl shadow-xl p-6">
+            <h2 className="font-medium text-green-600 mb-2">
+              Today's Performance
+            </h2>
 
-        <ResponsiveContainer width="100%" height={230}>
-          <BarChart data={todayEarning}>
-            <CartesianGrid strokeDasharray="5 5" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend/>
-            <Bar
-              dataKey="earning" 
-              fill="green" 
-              radius={[8, 8, 0, 0]}
-              barSize={60}
-            />
-            <Bar 
-              dataKey="deliveries" 
-              fill="#86sfa2" 
-              radius={[8, 8, 0, 0]}
-              barSize={60}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={todayEarning}>
+                <CartesianGrid strokeDasharray="5 5" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend/>
+                <Bar
+                  dataKey="earning" 
+                  fill="green" 
+                  radius={[8, 8, 0, 0]}
+                  barSize={60}
+                />
+                <Bar 
+                  dataKey="deliveries" 
+                  fill="#86sfa2" 
+                  radius={[8, 8, 0, 0]}
+                  barSize={60}
+                />
+              </BarChart>
+            </ResponsiveContainer>
 
-        <p className='mt-4 text-lg font-bold text-green-700'>
-          Rs.{todaysEarnings || 0} Earned Today
-        </p>
-        <p className='text-sm text-gray-500'>
-          {Math.floor(todaysEarnings / 40) || 0} Deliveries
-        </p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className='mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg cursor-pointer'
-        >
-          Refresh Earning
-        </button>
+            <p className='mt-4 text-lg font-bold text-green-700'>
+              Rs.{todaysEarnings || 0} Earned Today
+            </p>
+            <p className='text-sm text-gray-500'>
+              {Math.floor(todaysEarnings / 40) || 0} Deliveries
+            </p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className='mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg cursor-pointer'
+            >
+              Refresh Earning
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
     );
   }
 
@@ -324,6 +332,7 @@ const DeliveryBoy = ({ todaysEarnings }: DeliveryBoyProps) => {
             key={index}
             data={a}
             fetchAssignments={fetchAssignments}
+            onAssignmentAccepted={handleAssignmentAccepted}
           />
         ))}
       </div>
