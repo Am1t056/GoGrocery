@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@import 'leaflet/dist/leaflet.css';
+
+.scrollbar-hide::-webkit-scrollbar{
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and FireFox */
+.scrollbar-hide{
+    -ms-overflow-style: none;  /*IE AND EDGE*/
+    scrollbar-width: none;   /*FireFox*/
+}

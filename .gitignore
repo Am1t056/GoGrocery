@@ -1,23 +1,34 @@
-# dependencies
-node_modules
+@"
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# nextjs
-.next
-out
+# Next.js
+.next/
+out/
 
-# env files
+# Environment variables
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# logs
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# build files
-dist
-build
+# IDE
+.vscode/
+.idea/
 
 # OS files
 .DS_Store
 Thumbs.db
+
+# Build outputs
+dist/
+build/
+"@ | Out-File -FilePath .gitignore -Encoding utf8
